@@ -1,0 +1,18 @@
+.poo-image{    
+    height: 0;
+    width:0;
+
+    &.-errored{
+        height: 0;
+        width:0;
+    }
+
+    &.-loadedSuccessfuly{
+        height: auto;
+        width: auto;
+    }
+
+    &.-responsive{
+        width: 100%;
+    }
+}  

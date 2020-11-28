@@ -8,7 +8,8 @@ import './PooCircularProgress.scss';
 // #region Constants
 // ------------------------------------------------------------------------------------------
 
-const BASE_CLASSNAME = 'poo-circular-progress';
+export const BASE_CLASSNAME = 'poo-circular-progress';
+export const TESTID         = BASE_CLASSNAME;
 
 // #endregion Constants
 
@@ -42,7 +43,7 @@ const PooCircularProgress: React.FunctionComponent<PooCircularProgressProps> = (
     // #region Render
     // ------------------------------------------------------------------------------------------
     
-    return <div className={classes}><div></div><div></div><div></div><div></div></div>
+    return <div className={classes} data-testid={TESTID}><div></div><div></div><div></div><div></div></div>
     
     // #endregion Render
 }

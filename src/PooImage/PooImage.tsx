@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import PooCircularProgress from "../PooCircularProgress";
-import { PooImageProps as PooImageProps } from "./PooImage.types";
+import { PooImageAction, PooImageProps as PooImageProps, PooImageState } from "./PooImage.types";
 import classNames from 'classnames';
 
 import "./PooImage.scss";
@@ -21,10 +21,50 @@ interface SetStateOptions {
 // #region Constants
 // ------------------------------------------------------------------------------------------
 
-const ALLOWED_FILE_TYPES = ['jpg', 'jpeg', 'png', 'gif'];
-const BASE_CLASSNAME = 'poo-image';
+export const ALLOWED_FILE_TYPES = ['jpg', 'jpeg', 'png', 'gif'];
+export const BASE_CLASSNAME     = 'poo-image';
+export const ERROR_MESSAGE      = 'Error loading image';
 
 // #endregion Constants
+
+// ------------------------------------------------------------------------------------------
+// #region Reducer
+// ------------------------------------------------------------------------------------------
+
+const initialState: PooImageState = {
+    errored:           false,
+    loading:           true,
+    loadedSuccessfuly: false
+};
+
+function reducer(state: PooImageState, action: PooImageAction): PooImageState {
+  switch (action.type) {
+    case 'loaded':
+      return {
+            errored: false,
+            loading: false,
+            loadedSuccessfuly: true
+        };
+    case 'loading':
+      return {
+            errored: false,
+            loading: true,
+            loadedSuccessfuly: false
+        };
+    case 'errored':
+      return {
+            errored: true,
+            loading: false,
+            loadedSuccessfuly: false
+        };
+    case 'reset':
+      return initialState;
+    default:
+      throw new Error();
+  }
+}
+
+// #endregion Reducer
 
 // ------------------------------------------------------------------------------------------
 // #region Component
@@ -36,81 +76,62 @@ const PooImage: React.FunctionComponent<PooImageProps> = (props: PooImageProps) 
     // #region Setup
     // ------------------------------------------------------------------------------------------
     
-    const { classNames: customClassNames, lazy, loadingAnimationSize, responsive, src } = props;
+    const { altText, classNames: customClassNames, lazy, loadingAnimationSize, responsive, src } = props;
     
     // #endregion Setup
 
     // ------------------------------------------------------------------------------------------
-    // #region State
+    // #region Side Effects
     // ------------------------------------------------------------------------------------------
+
+    const [{ errored, loading, loadedSuccessfuly }, dispatch] = useReducer(reducer, initialState);
+
+    useEffect(() => dispatch({type: 'reset'}), [src]);
+
+    // #endregion Side Effects
     
-    const [ loading,           setLoading           ] = useState<boolean>(true);
-    const [ loadedSuccessfuly, setLoadedSuccessfuly ] = useState<boolean>(false);
-    const [ errored,           setErrored           ] = useState<boolean>(false);
-    
-    // #endregion State
-
-    // ------------------------------------------------------------------------------------------
-    // #region Functions
-    // ------------------------------------------------------------------------------------------
-
-    const setState = ({ errored, loading, loadedSuccessfuly }: SetStateOptions): void => {
-        setErrored(errored);
-        setLoading(loading);
-        setLoadedSuccessfuly(loadedSuccessfuly);
-    }
-
-    const validateSrc = (inputSrc: string): string | undefined => 
-        ALLOWED_FILE_TYPES.includes(inputSrc.split('.').pop()) ? inputSrc : undefined;
-
-    // #endregion Functions
-
     // ------------------------------------------------------------------------------------------
     // #region Transformations & Computation
     // ------------------------------------------------------------------------------------------
-
+    
     const baseClassNames = [BASE_CLASSNAME];
     customClassNames && baseClassNames.push(customClassNames);
-
+    
     const imageClassNames = classNames(baseClassNames.join(' '), { 
         '-responsive'       : responsive,
         '-loadedSuccessfuly': loadedSuccessfuly,
         '-errored'          : errored 
     });
     
-    // #endregion Transformations & Computation
+    const isImage                     = ALLOWED_FILE_TYPES.includes(src?.split('.').pop());
+    const meetsBasicRequirements      = isImage && altText;
+    const doesntMeetBasicRequirements = !meetsBasicRequirements;
 
-    // ------------------------------------------------------------------------------------------
-    // #region Handlers
-    // ------------------------------------------------------------------------------------------
-    
-    const handleOnError = () => setState({ errored: true,  loading: false, loadedSuccessfuly: false });
-    const handleOnLoad  = () => setState({ errored: false, loading: false, loadedSuccessfuly: true  });
-    
-    // #endregion Handlers
+    // #endregion Transformations & Computation
 
     // ------------------------------------------------------------------------------------------
     // #region Return
     // ------------------------------------------------------------------------------------------
     
-    if(!src) return null;
+    if(doesntMeetBasicRequirements) return null;
 
     return (
         <>
             {loading && <PooCircularProgress size={loadingAnimationSize} />}
-            <img 
-                className={imageClassNames}
-                loading={lazy}
-                onError={handleOnError}
-                onLoad={handleOnLoad}
-                src={validateSrc(src)} 
-            />
-            { errored && <div>Error</div> }
+            {!errored &&
+                <img 
+                    alt       = { altText }
+                    className = { imageClassNames }
+                    loading   = { lazy }
+                    onError   = { () => dispatch({type: 'errored'}) }
+                    onLoad    = { () => dispatch({type: 'loaded'}) }
+                    src       = { src } 
+                />}
+            {errored && <div>{`${ERROR_MESSAGE} for ${altText}`}</div>}
         </>
     )
     
     // #endregion Return
-
 }
 
 // #endregion Component

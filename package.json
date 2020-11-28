@@ -25,7 +25,6 @@
     "React",
     "Component",
     "Library",
-    "Rollup",
     "Typescript",
     "Sass",
     "Storybook"
@@ -56,17 +55,17 @@
     "babel-preset-react-app": "^9.1.2",
     "classnames": "^2.2.6",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^24.9.0",
+    "jest": "^26.6.3",
     "node-sass": "^4.14.1",
-    "react": "file:../cmc/cmc/node_modules/react",
-    "react-dom": "file:../cmc/cmc/node_modules/react-dom",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
     "rollup": "^1.27.4",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-postcss": "^3.1.2",
     "rollup-plugin-typescript2": "^0.27.0",
     "sass-loader": "^8.0.0",
-    "ts-jest": "^24.2.0",
+    "ts-jest": "26.4.4",
     "typescript": "^3.7.2"
   }
 }

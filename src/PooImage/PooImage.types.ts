@@ -10,9 +10,10 @@ export interface PooImageProps {
 }
 
 export type PooImageState = {
-    errored:           boolean,
-    loading:           boolean,
-    loadedSuccessfuly: boolean,
+    errored           : boolean,
+    loading           : boolean,
+    loadedSuccessfuly : boolean,
+    src               : string,
 }
 
 export type PooImageAction = { type: 'loaded' } | { type: 'loading'} | { type: 'errored' } | { type: 'reset' }

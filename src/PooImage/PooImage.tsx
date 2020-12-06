@@ -32,27 +32,31 @@ export const ERROR_MESSAGE      = 'Error loading image';
 // ------------------------------------------------------------------------------------------
 
 const initialState: PooImageState = {
-    errored:           false,
-    loading:           true,
-    loadedSuccessfuly: false
+    errored           : false,
+    loading           : true,
+    loadedSuccessfuly : false,
+    src               : ''
 };
 
 function reducer(state: PooImageState, action: PooImageAction): PooImageState {
   switch (action.type) {
     case 'loaded':
       return {
+            ...state,
             errored: false,
             loading: false,
             loadedSuccessfuly: true
         };
     case 'loading':
       return {
+            ...state,
             errored: false,
             loading: true,
             loadedSuccessfuly: false
         };
     case 'errored':
       return {
+            ...state,
             errored: true,
             loading: false,
             loadedSuccessfuly: false
@@ -84,7 +88,8 @@ const PooImage: React.FunctionComponent<PooImageProps> = (props: PooImageProps) 
     // #region Side Effects
     // ------------------------------------------------------------------------------------------
 
-    const [{ errored, loading, loadedSuccessfuly }, dispatch] = useReducer(reducer, initialState);
+    initialState.src = src;
+    const [{ errored, loading, loadedSuccessfuly, src: imageSrc }, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => dispatch({type: 'reset'}), [src]);
 
@@ -125,7 +130,7 @@ const PooImage: React.FunctionComponent<PooImageProps> = (props: PooImageProps) 
                     loading   = { lazy }
                     onError   = { () => dispatch({type: 'errored'}) }
                     onLoad    = { () => dispatch({type: 'loaded'}) }
-                    src       = { src } 
+                    src       = { imageSrc } 
                 />}
             {errored && <div>{`${ERROR_MESSAGE} for ${altText}`}</div>}
         </>
